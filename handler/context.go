@@ -15,8 +15,9 @@
 package handler
 
 import (
+	"github.com/nitrictech/go-sdk/api/storage"
 	http "github.com/nitrictech/nitric/core/pkg/proto/apis/v1"
-	storage "github.com/nitrictech/nitric/core/pkg/proto/storage/v1"
+	storagepb "github.com/nitrictech/nitric/core/pkg/proto/storage/v1"
 )
 
 type HttpContext struct {
@@ -105,18 +106,18 @@ type BlobEventContext struct {
 	Extras   map[string]interface{}
 }
 
-func (c *BlobEventContext) ToClientMessage() *storage.ClientMessage {
-	return &storage.ClientMessage{
+func (c *BlobEventContext) ToClientMessage() *storagepb.ClientMessage {
+	return &storagepb.ClientMessage{
 		Id: c.id,
-		Content: &storage.ClientMessage_BlobEventResponse{
-			BlobEventResponse: &storage.BlobEventResponse{
+		Content: &storagepb.ClientMessage_BlobEventResponse{
+			BlobEventResponse: &storagepb.BlobEventResponse{
 				Success: c.Response.Success,
 			},
 		},
 	}
 }
 
-func NewBlobEventContext(msg *storage.ServerMessage) *BlobEventContext {
+func NewBlobEventContext(msg *storagepb.ServerMessage) *BlobEventContext {
 	req := msg.GetBlobEventRequest()
 	
 	return &BlobEventContext{
@@ -137,9 +138,41 @@ func (c *BlobEventContext) WithError(err error){
 }
 
 type FileEventContext struct {
+	id 		string
 	Request  FileEventRequest
 	Response *FileEventResponse
 	Extras   map[string]interface{}
+}
+
+func (c *FileEventContext) ToClientMessage() *storagepb.ClientMessage {
+	return &storagepb.ClientMessage{
+		Id: c.id,
+		Content: &storagepb.ClientMessage_BlobEventResponse{
+			BlobEventResponse: &storagepb.BlobEventResponse{
+				Success: c.Response.Success,
+			},
+		},
+	}
+}
+
+func NewFileEventContext(msg *storagepb.ServerMessage, bucket *storage.Bucket) *FileEventContext {
+	_ = msg.GetBlobEventRequest()
+	
+	return &FileEventContext{
+		id: msg.Id,
+		Request: &fileEventRequestImpl{
+			bucket: bucket, //TODO:
+		},
+		Response: &FileEventResponse{
+			Success: true,
+		},
+	}
+}
+
+func (c *FileEventContext) WithError(err error){
+	c.Response = &FileEventResponse{
+		Success: false,
+	}
 }
 
 type WebsocketContext struct {

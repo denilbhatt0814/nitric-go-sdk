@@ -122,11 +122,11 @@ type FileEventRequest interface {
 }
 
 type fileEventRequestImpl struct {
-	bucket           storage.Bucket
+	bucket           *storage.Bucket
 	notificationType BlobEventType
 }
 
-func (f *fileEventRequestImpl) Bucket() storage.Bucket {
+func (f *fileEventRequestImpl) Bucket() *storage.Bucket {
 	return f.bucket
 }
 

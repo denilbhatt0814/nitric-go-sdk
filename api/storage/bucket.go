@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 
+	"github.com/nitrictech/go-sdk/handler"
 	v1 "github.com/nitrictech/nitric/core/pkg/proto/storage/v1"
 )
 
@@ -28,6 +29,8 @@ type Bucket interface {
 	Files(ctx context.Context) ([]File, error)
 	// Name - Get the name of the bucket
 	Name() string
+	// On - Create a blob event subscription
+	On(notificationType handler.BlobEventType, notificationPrefixFilter string, middleware ...handler.FileEventMiddleware)
 }
 
 type bucketImpl struct {
@@ -66,4 +69,8 @@ func (b *bucketImpl) Files(ctx context.Context) ([]File, error) {
 
 func (b *bucketImpl) Name() string {
 	return b.name
+}
+
+func (b *bucketImpl) On(notificationType handler.BlobEventType, notificationPrefixFilter string, middleware ...handler.FileEventMiddleware){
+	
 }

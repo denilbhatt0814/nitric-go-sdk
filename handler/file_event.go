@@ -19,7 +19,7 @@ type (
 	FileEventMiddleware = func(*FileEventContext, FileEventHandler) (*FileEventContext, error)
 )
 
-func fileEventDummy(ctx *FileEventContext) (*FileEventContext, error) {
+func FileEventDummy(ctx *FileEventContext) (*FileEventContext, error) {
 	return ctx, nil
 }
 
@@ -31,7 +31,7 @@ type chainedFileEventMiddleware struct {
 // automatically finalize chain with dummy function
 func (c *chainedFileEventMiddleware) invoke(ctx *FileEventContext) (*FileEventContext, error) {
 	if c.nextFunc == nil {
-		c.nextFunc = fileEventDummy
+		c.nextFunc = FileEventDummy
 	}
 
 	return c.fun(ctx, c.nextFunc)
